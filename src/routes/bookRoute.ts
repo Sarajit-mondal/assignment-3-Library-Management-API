@@ -7,20 +7,42 @@ import Book from '../models/bookModule';
 export const bookRoute = express.Router();
 
 // ✅ GET /books - Get all books
-bookRoute.get('/', async (_req: Request, res: Response) => {
+bookRoute.get("/", async (req: Request, res: Response) => {
   try {
-    const books = await Book.find();
-    res.status(200).json(books);
+    // Extract query parameters
+    const filterGenre = req.query.filter as string;
+    const sortBy = (req.query.sortBy as string) || "createdAt";
+    const sortOrder = (req.query.sort as string) === "asc" ? 1 : -1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    // Build filter object
+    const filter: any = {};
+    if (filterGenre) {
+      filter.genre = filterGenre.toUpperCase();
+    }
+
+    // Query from database
+    const books = await Book.find(filter)
+      .sort({ [sortBy]: sortOrder })
+      .limit(limit);
+
+    res.status(200).json({
+      success: true,
+      message : "Books retrieved successfully",
+      data : books
+    });
   } catch (error) {
-    console.error('GET /books error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Failed to fetch books:", error);
+    res.status(500).json({ message: "Failed to fetch books" });
   }
 });
+
+
+
 
 // ✅ POST /books - Create a new book
 bookRoute.post('/', async (req: Request, res: Response | any) => {
   const parsed = bookSchema.safeParse(req.body);
-
   if (!parsed.success) {
     return res.status(404).json({
       message: 'Validation error',
