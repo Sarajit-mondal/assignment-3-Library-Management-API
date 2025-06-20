@@ -1,6 +1,5 @@
 # Node modules
 node_modules/
-eslint.config.mjs
 # Logs
 logs
 *.log
@@ -8,7 +7,7 @@ npm-debug.log*
 
 # Build output
 dist/
-
+dis/
 # Env files
 .env
 
@@ -18,3 +17,4 @@ Thumbs.db
 
 # TypeScript cache
 *.tsbuildinfo
+.vercel
