@@ -1,7 +1,11 @@
-import { Request, Response } from "express"
+import { Application, Request, Response } from "express"
+import { bookRoute } from "./src/routes/bookRoute"
+import express from 'express';
 
-const express = require('express')
-const app = express()
+const app:Application = express()
+app.use(express.json())
+
+ app.use('/books',bookRoute)
 
 
 app.get('/', (req:Request, res:Response) => {
