@@ -84,3 +84,54 @@ bookRoute.post('/', async (req: Request, res: Response | any) => {
     return res.status(500).json({ message: 'Server error' });
   }
 });
+
+
+// PUT /api/books/:bookId
+bookRoute.put("/:bookId", async (req: Request, res: Response | any) => {
+  const bookId = req.params.bookId;
+  const updateData = req.body;
+
+  try {
+    const updatedBook = await Book.findByIdAndUpdate(
+      bookId,
+      updateData,
+      { new: true, runValidators: true } // return the updated doc & validate fields
+    );
+
+    if (!updatedBook) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Book updated successfully",
+      data: updatedBook
+    });
+  } catch (error) {
+    console.error("Update error:", error);
+    res.status(500).json({ message: "Failed to update book", error });
+  }
+});
+
+
+// DELETE /api/books/:bookId
+bookRoute.delete("/:bookId", async (req: Request, res: Response | any) => {
+  const bookId = req.params.bookId;
+
+  try {
+    const deletedBook = await Book.findByIdAndDelete(bookId);
+
+    if (!deletedBook) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Book deleted successfully",
+      data: deletedBook,
+    });
+  } catch (error) {
+    console.error("Delete error:", error);
+    res.status(500).json({ message: "Failed to delete book", error });
+  }
+});
