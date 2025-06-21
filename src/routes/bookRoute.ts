@@ -6,6 +6,28 @@ import Book from '../models/bookModule';
 
 export const bookRoute = express.Router();
 
+
+bookRoute.get("/:bookId", async (req: Request, res: Response | any) => {
+  const bookId = req.params.bookId;
+
+  try {
+    const book = await Book.findById(bookId);
+
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+
+    res.status(200).json({
+      success : true,
+      message : "Book retrieved successfully",
+      data : book
+    });
+  } catch (error) {
+    console.error("Error fetching book:", error);
+    res.status(500).json({ message: "Failed to fetch book", error });
+  }
+});
+
 // ✅ GET /books - Get all books
 bookRoute.get("/", async (req: Request, res: Response) => {
   try {
