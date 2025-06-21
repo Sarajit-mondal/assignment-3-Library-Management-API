@@ -4,7 +4,7 @@ import { Schema, model } from 'mongoose';
 import { IBook } from '../interfaces/book.interface';
 
 
-const bookSchema = new Schema<IBook>(
+const bookModule = new Schema<IBook>(
   {
     title: { type: String },
     author: { type: String },
@@ -20,5 +20,15 @@ const bookSchema = new Schema<IBook>(
   
 );
 
-const Book = model<IBook>('Book', bookSchema);
+// instance method
+bookModule.methods.deductCopies = function(quantity:number){
+  this.copies -= quantity
+  if(this.copies <=0){
+    this.available = false;
+    this.copies = 0;
+  }
+}
+
+
+const Book = model<IBook>('Book', bookModule);
 export default Book;
