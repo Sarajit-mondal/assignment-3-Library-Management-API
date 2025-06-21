@@ -3,6 +3,8 @@ import express, { Request, Response } from 'express'
 import { borrowBookSchems } from '../schemas/borrowBook.schema';
 import Book from '../models/bookModule';
 import BorrowBook from '../models/borrowBookModule';
+import { title } from 'process';
+import { toUSVString } from 'util';
 
 export const borrowBookRoute = express.Router();
 
@@ -43,3 +45,49 @@ borrowBookRoute.post('/',async(req:Request,res:Response | any)=>{
 
    
 })
+
+
+
+borrowBookRoute.get("/", async (req: Request, res: Response) => {
+  try {
+    const result = await BorrowBook.aggregate([
+      {
+        $group: {
+          _id: "$book", // group by book ID
+          totalQuantity: { $sum: "$quantity" }
+        }
+      },
+      {
+        $lookup: {
+          from: "books", // collection name must match MongoDB collection name
+          localField: "_id",
+          foreignField: "_id",
+          as: "bookDetails"
+        }
+      },
+      {
+        $unwind: "$bookDetails"
+      },
+      {
+        $project: {
+          _id: 0,
+         book:{
+             title: "$bookDetails.title",
+          isbn: "$bookDetails.isbn",
+         },
+         totalQuantity:1
+
+        }
+       
+      }
+    ]);
+
+    res.status(200).json({
+        success:true,
+        message: "Borrowed books summary retrieved successfully",
+        data:result
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch borrow summary", details: error });
+  }
+});
