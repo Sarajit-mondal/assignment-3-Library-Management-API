@@ -23,3 +23,7 @@ const genreEnum = [
   available: z.boolean(),
 });
 
+
+
+
+export const BookUpdateSchema = bookSchema.partial()

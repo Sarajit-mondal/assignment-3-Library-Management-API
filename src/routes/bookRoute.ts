@@ -1,6 +1,6 @@
 // src/routes/book.route.ts
 import express, { Request, Response, NextFunction } from 'express';
-import { bookSchema } from '../schemas/book.schema';
+import { bookSchema, BookUpdateSchema } from '../schemas/book.schema';
 import Book from '../models/bookModule';
 
 
@@ -87,20 +87,22 @@ bookRoute.post('/', async (req: Request, res: Response | any, next) => {
 
 
 // PUT /api/books/:bookId
-bookRoute.put("/:bookId", async (req: Request, res: Response | any) => {
-  const updateBook = bookSchema.parse(req.body)
+bookRoute.put("/:bookId", async (req: Request, res: Response | any,next) => {
   const bookId = req.params.bookId;
-  const updateData = req.body;
+ 
+  const parsed = BookUpdateSchema.safeParse(req.body);
 
-
-  
-
-
+  if (!parsed.success) {
+    const error: any = new Error("Validation error");
+    error.statusCode = 400;
+    error.details = parsed.error.format();
+    return next(error); // let global error handler take care
+  }
   try {
     const updatedBook = await Book.findByIdAndUpdate(
       bookId,
-      updateData,
-      { new: true, runValidators: true } // return the updated doc & validate fields
+      parsed.data,
+      { new: true, runValidators: true }
     );
 
     if (!updatedBook) {
