@@ -1,5 +1,5 @@
 // src/routes/book.route.ts
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { bookSchema } from '../schemas/book.schema';
 import Book from '../models/bookModule';
 
@@ -61,35 +61,40 @@ bookRoute.get("/", async (req: Request, res: Response) => {
 
 
 
-
 // ✅ POST /books - Create a new book
-bookRoute.post('/', async (req: Request, res: Response | any) => {
+bookRoute.post('/', async (req: Request, res: Response | any, next) => {
   const parsed = bookSchema.safeParse(req.body);
+
   if (!parsed.success) {
-    return res.status(404).json({
-      message: 'Validation error',
-      errors: parsed.error.format(),
-    });
+    const error: any = new Error("Validation error");
+    error.statusCode = 400;
+    error.details = parsed.error.format();
+    return next(error);
   }
 
   try {
     const newBook = await Book.create(parsed.data);
+
     return res.status(201).json({
-        success: true,
-        message: "Book created successfully",
-        data: newBook
+      success: true,
+      message: "Book created successfully",
+      data: newBook,
     });
   } catch (error) {
-    console.error('POST /books error:', error);
-    return res.status(500).json({ message: 'Server error' });
+    return next(error); // Pass to global error handler
   }
 });
 
 
 // PUT /api/books/:bookId
 bookRoute.put("/:bookId", async (req: Request, res: Response | any) => {
+  const updateBook = bookSchema.parse(req.body)
   const bookId = req.params.bookId;
   const updateData = req.body;
+
+
+  
+
 
   try {
     const updatedBook = await Book.findByIdAndUpdate(
@@ -115,14 +120,19 @@ bookRoute.put("/:bookId", async (req: Request, res: Response | any) => {
 
 
 // DELETE /api/books/:bookId
-bookRoute.delete("/:bookId", async (req: Request, res: Response | any) => {
+bookRoute.delete("/:bookId", async (req: Request, res: Response | any,next) => {
   const bookId = req.params.bookId;
 
   try {
     const deletedBook = await Book.findByIdAndDelete(bookId);
 
     if (!deletedBook) {
-      return res.status(404).json({ message: "Book not found" });
+     
+    const error: any = new Error("Book not found");
+    error.statusCode = 400;
+  
+    return next(error);
+  
     }
 
     res.status(200).json({
