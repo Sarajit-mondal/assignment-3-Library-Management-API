@@ -1,104 +1,96 @@
-# TypeScript Express MongoDB Starter
+# 📚 Book Management API
 
-A boilerplate for building REST APIs using:
-
-- TypeScript
-- Express.js
-- MongoDB with Mongoose
-- dotenv
-- Zod for validation
-- ts-node-dev for development
-- ESLint
+A simple RESTful API built with **Node.js**, **Express**, **MongoDB**, and **Zod** for managing books and borrowing records.
 
 ---
 
-## 🛠️ Installation
+## 🔧 Features
 
-```bash
-git clone https://github.com/yourusername/ts-express-api.git
-cd ts-express-api
-npm install
-```
-
----
-
-## 🔧 Configuration
-
-Create a `.env` file in the root:
-
-```
-PORT=5000
-MONGO_URI=mongodb://localhost:27017/ts-api
-```
+- ✅ Create, Read, Update, Delete books
+- ✅ Filter books by genre
+- ✅ Sort and limit query results
+- ✅ Borrow books with inventory checks
+- ✅ Aggregate borrowed book summaries
+- ✅ Global error handling
+- ✅ Schema validation using Zod
 
 ---
 
-## 🚀 Run Project
+## 📁 Folder Structure
 
-### Start development server
-
-```bash
-npm run dev
 ```
-
-### Build for production
-
-```bash
-npm run build
-```
-
-### Start production server
-
-```bash
-npm run start
-```
-
-### Run linter
-
-```bash
-npm run lint
+src/
+├── controllers/
+├── middlewares/
+├── models/
+├── routes/
+├── schemas/
+├── utils/
+└── app.ts
 ```
 
 ---
 
-## 📦 Folder Structure
+## 🚀 API Endpoints
 
-```
-ts-express-api/
-├── src/
-│   └── index.ts
-├── .env
-├── .eslintrc.json
-├── package.json
-├── tsconfig.json
-└── README.md
-```
+### 📘 Books
 
----
+| Method | Endpoint              | Description               |
+|--------|------------------------|---------------------------|
+| GET    | `/api/books`          | Get all books (filter, sort, limit) |
+| GET    | `/api/books/:bookId`  | Get a single book         |
+| POST   | `/api/books`          | Create a new book         |
+| PUT    | `/api/books/:bookId`  | Update a book             |
+| DELETE | `/api/books/:bookId`  | Delete a book             |
 
-## ✨ Features
-
-- Express API with TypeScript
-- Mongoose ODM for MongoDB
-- Zod for runtime validation
-- ESLint with TypeScript support
-- Hot reload using ts-node-dev
+**Example:**  
+`GET /api/books?filter=FICTION&sortBy=createdAt&sort=desc&limit=5`
 
 ---
 
-## 📄 Scripts in `package.json`
+### 📗 Borrow
+
+| Method | Endpoint         | Description                    |
+|--------|------------------|--------------------------------|
+| POST   | `/api/borrow`    | Borrow a book (deducts copies) |
+| GET    | `/api/borrow`    | Get borrowed summary (aggregate) |
+
+---
+
+## 🛡️ Validation
+
+All inputs are validated using **Zod schema**. On validation error, a structured response is returned:
 
 ```json
-"scripts": {
-  "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-  "build": "tsc",
-  "start": "node dist/index.js",
-  "lint": "eslint . --ext .ts"
+{
+  "success": false,
+  "message": "Validation error",
+  "error": {
+    "copies": { "_errors": ["Copies must be a positive number"] }
+  }
 }
 ```
 
 ---
 
-## 📜 License
+## 🧪 Error Handling
 
-MIT
+Errors are caught and formatted using a global error handler middleware, ensuring consistent response structure.
+
+---
+
+## 📦 Installation
+
+```bash
+git clone https://github.com/Sarajit-mondal/assignment-3-Library-Management-API.git
+cd book-management-api
+npm install
+npm run dev
+```
+
+---
+
+## 📝 License
+
+This project is open-source and free to use.
+
