@@ -91,6 +91,11 @@ bookRoute.put("/:bookId", async (req: Request, res: Response | any,next) => {
   const bookId = req.params.bookId;
  
   const parsed = BookUpdateSchema.safeParse(req.body);
+  const available = parsed.data?.copies === 0 ? false : true;
+  const updateData ={
+    ...parsed.data,
+    available
+  }
 
   if (!parsed.success) {
     const error: any = new Error("Validation error");
@@ -101,7 +106,7 @@ bookRoute.put("/:bookId", async (req: Request, res: Response | any,next) => {
   try {
     const updatedBook = await Book.findByIdAndUpdate(
       bookId,
-      parsed.data,
+      updateData,
       { new: true, runValidators: true }
     );
 
