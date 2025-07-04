@@ -17,8 +17,8 @@ const genreEnum = [
     (val) => genreEnum.includes(val),
     { message: "Genre must be one of: FICTION, NON_FICTION, SCIENCE, HISTORY, BIOGRAPHY, FANTASY" }
   ),
-  isbn: z.string().min(10).max(17), // You can refine with regex if needed
-  description: z.string().min(10, "Description should be at least 10 characters"),
+  isbn: z.string().min(1).max(17), // You can refine with regex if needed
+  description: z.string().min(5, "Description should be at least 5 characters"),
   copies: z
     .number()
     .int()
@@ -31,4 +31,5 @@ const genreEnum = [
 
 
 
+export type BookSchema = z.infer<typeof bookSchema>;
 export const BookUpdateSchema = bookSchema.partial()

@@ -1,7 +1,7 @@
 // src/routes/book.route.ts
 import express, { Request, Response, NextFunction } from 'express';
-import { bookSchema, BookUpdateSchema } from '../schemas/book.schema';
 import Book from '../models/bookModule';
+import { bookSchema, BookUpdateSchema } from '../schemas/book.schema';
 
 
 export const bookRoute = express.Router();
@@ -66,10 +66,18 @@ bookRoute.post('/', async (req: Request, res: Response | any, next) => {
   const parsed = bookSchema.safeParse(req.body);
 
   if (!parsed.success) {
-    const error: any = new Error("Validation error");
-    error.statusCode = 400;
-    error.details = parsed.error.format();
-    return next(error);
+     // 1. Get the tidy { field: ["msg"] } map
+  const fieldErrors = parsed.error.flatten().fieldErrors;
+
+  // 2. Pick the first error string for a human‑readable summary
+  const firstMessage =
+    Object.values(fieldErrors).flat()[0] ?? "Validation error";
+
+  // 3. Respond with both pieces
+  return res.status(400).json({
+    message: firstMessage,  // ← toast‑friendly summary
+    errors: fieldErrors,    // ← detailed map for inline field displays
+  })
   }
 
   try {
@@ -98,10 +106,18 @@ bookRoute.put("/:bookId", async (req: Request, res: Response | any,next) => {
   }
 
   if (!parsed.success) {
-    const error: any = new Error("Validation error");
-    error.statusCode = 400;
-    error.details = parsed.error.format();
-    return next(error); // let global error handler take care
+       // 1. Get the tidy { field: ["msg"] } map
+  const fieldErrors = parsed.error.flatten().fieldErrors;
+
+  // 2. Pick the first error string for a human‑readable summary
+  const firstMessage =
+    Object.values(fieldErrors).flat()[0] ?? "Validation error";
+
+  // 3. Respond with both pieces
+  return res.status(400).json({
+    message: firstMessage,  // ← toast‑friendly summary
+    errors: fieldErrors,    // ← detailed map for inline field displays
+  })
   }
   try {
     const updatedBook = await Book.findByIdAndUpdate(
