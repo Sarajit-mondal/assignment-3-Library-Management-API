@@ -9,7 +9,7 @@ app.use(express.json())
 
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'https://labrary-mangement-clint.vercel.app']
+    origin: ['http://localhost:5174', 'https://labrary-mangement-clint.vercel.app',"*"]
    })
 );
 
