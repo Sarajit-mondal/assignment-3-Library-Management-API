@@ -32,4 +32,4 @@ const genreEnum = [
 
 
 export type BookSchema = z.infer<typeof bookSchema>;
-export const BookUpdateSchema = bookSchema.partial()
+export const BookUpdateSchema = bookSchema.partial();
