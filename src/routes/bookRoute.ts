@@ -47,13 +47,15 @@ bookRoute.get("/", async (req: Request, res: Response) => {
     const books = await Book.find(filter)
       .sort({ [sortBy]: sortOrder })
       .limit(limit);
-    //total data length
+
+          // total data length
     const total = await Book.countDocuments()
+
     res.status(200).json({
       success: true,
       message : "Books retrieved successfully",
       data : books,
-      totalBook : total,
+      totalBooks : total,
     });
   } catch (error) {
     console.error("Failed to fetch books:", error);
