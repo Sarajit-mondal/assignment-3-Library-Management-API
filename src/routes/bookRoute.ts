@@ -36,8 +36,7 @@ bookRoute.get("/", async (req: Request, res: Response) => {
     const sortBy = (req.query.sortBy as string) || "createdAt";
     const sortOrder = (req.query.sort as string) === "asc" ? 1 : -1;
     const limit = parseInt(req.query.limit as string) || 10;
-    const  skipPage = parseInt(req.query.skip as string) || 1;
-    const skip = (skipPage - 1) * limit;
+
     // Build filter object
     const filter: any = {};
     if (filterGenre) {
@@ -47,7 +46,6 @@ bookRoute.get("/", async (req: Request, res: Response) => {
     // Query from database
     const books = await Book.find(filter)
       .sort({ [sortBy]: sortOrder })
-      .skip(skip)
       .limit(limit);
 
           // total data length

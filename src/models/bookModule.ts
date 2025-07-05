@@ -15,13 +15,12 @@ const bookModule = new Schema<IBook>(
     available: { type: Boolean },
   },
   { timestamps: true,
-    versionKey: false,
-   },
-  
+    versionKey: false
+  }
 );
 
 // instance method
-bookModule.methods.deductCopies = function(quantity:number){
+bookModule.methods.deductCopies = function(quantity:any){
   this.copies -= quantity
   if(this.copies <=0){
     this.available = false;
